@@ -4,9 +4,18 @@ import { WalletSelectorContextProvider } from "../contexts/WalletSelectorContext
 
 import { api } from "~/utils/api";
 import Header from "~/components/Header";
+import { Container } from "~/components/Container";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+
+  const SignIn = () => {
+    return (
+      <button className="mx-1 mb-24 inline-flex items-center justify-center whitespace-nowrap rounded-lg border-4 border-transparent border-primary bg-slate-200 px-4 py-2 text-2xl font-bold text-primary shadow-sm hover:bg-orange-400">
+        Connect Your Wallet
+      </button>
+    );
+  };
 
   return (
     <>
@@ -15,13 +24,10 @@ const Home: NextPage = () => {
         <meta name="description" content="Protect against flight delay!" />
         <link rel="icon" href="/logo.png" />
       </Head>
-      <main className="">
+      <main className="bg-image">
         <WalletSelectorContextProvider>
           <Header />
-          <div className="bg-image">tEST</div>
-          {/* <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-            
-          </div> */}
+          <Container />
         </WalletSelectorContextProvider>
       </main>
     </>
