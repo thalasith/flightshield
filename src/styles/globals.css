@@ -3,3 +3,12 @@
 @tailwind utilities;
 @import "@near-wallet-selector/modal-ui/styles.css";
 @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
+.bg-image {
+  background-image: url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 88vh;
+  width: 100vw;
+}

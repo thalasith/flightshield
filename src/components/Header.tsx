@@ -1,11 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import {
-  providers,
-  utils,
-  keyStores,
-  Near,
-  WalletConnection,
-} from "near-api-js";
+import { providers, utils } from "near-api-js";
 import type { AccountView } from "near-api-js/lib/providers/provider";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
 import type { Account } from "../interfaces";
@@ -83,12 +77,12 @@ export default function Header() {
   }, [accountId, getAccount]);
 
   return (
-    <Popover className="sticky z-10 border-b border-gray-600">
-      <div className="mx-auto w-10/12  sm:px-6">
+    <Popover className="sticky z-10 border-b border-gray-600 bg-primary">
+      <div className="mx-auto w-10/12 sm:px-6">
         <div className="flex items-center justify-between py-6 ">
           <div className="flex items-center justify-start lg:w-0 lg:flex-1">
             <Link className="flex" href="/">
-              <div className="ml-4 text-2xl font-bold lg:text-4xl">Library</div>
+              <img src="/inverse_full_logo.png" width={400} height={100} />
             </Link>
           </div>
           <div className="hidden flex-row items-start justify-start lg:flex"></div>
