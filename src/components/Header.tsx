@@ -94,12 +94,12 @@ export default function Header() {
           </div>
           <div className="hidden items-center lg:flex">
             {account ? (
-              <div className="mr-4">
+              <div className="mr-4 text-white">
                 Your Balance: {utils.format.formatNearAmount(account.amount, 2)}{" "}
                 N{" "}
               </div>
             ) : null}
-            {account ? (
+            {account && (
               <Menu
                 as="div"
                 className="relative inline-block items-center text-left"
@@ -188,17 +188,6 @@ export default function Header() {
                   </Menu.Items>
                 </Transition>
               </Menu>
-            ) : (
-              <button
-                className="flex"
-                onClick={() => {
-                  void handleSignIn();
-                }}
-              >
-                {" "}
-                <GoSignIn className="mr-2 h-5 w-5" aria-hidden="true" /> Connect
-                Wallet{" "}
-              </button>
             )}
           </div>
         </div>
@@ -239,27 +228,21 @@ export default function Header() {
             <div className="space-y-1 px-2 pt-2 pb-3">
               <Link
                 href="/games"
-                className="block rounded-md px-3 py-2 text-base font-medium text-slate-600 hover:bg-gray-50 hover:text-gray-900"
-              >
-                Games
-              </Link>
+                className="block rounded-md px-3 py-2 text-base font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-900"
+              ></Link>
               <Link
                 href="open_bets"
-                className="block rounded-md px-3 py-2 text-base font-medium text-slate-600 hover:bg-gray-50 hover:text-gray-900"
-              >
-                All Open Bets
-              </Link>
+                className="block rounded-md px-3 py-2 text-base font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-900"
+              ></Link>
               <Link
                 href="your_bets"
-                className="block rounded-md px-3 py-2 text-base font-medium text-slate-600 hover:bg-gray-50 hover:text-gray-900"
-              >
-                Your Bets
-              </Link>
+                className="block rounded-md px-3 py-2 text-base font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-900"
+              ></Link>
             </div>
 
             {account ? (
               <div className="flex flex-col items-center">
-                <p className="mb-2 text-center text-slate-600">
+                <p className="mb-2 text-center text-slate-200">
                   Your Balance:{" "}
                   <span className="font-extrabold">
                     {utils.format.formatNearAmount(account.amount, 2)} N

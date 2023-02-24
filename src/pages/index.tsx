@@ -2,7 +2,6 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { WalletSelectorContextProvider } from "../contexts/WalletSelectorContext";
 
-import { api } from "~/utils/api";
 import Header from "~/components/Header";
 import { Container } from "~/components/Container";
 
