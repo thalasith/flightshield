@@ -2,6 +2,8 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{Vector, LookupMap};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, near_bindgen, AccountId};
+use std::time::SystemTime;
+use chrono::{DateTime,Local, TimeZone};
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -78,8 +80,19 @@ impl Contract {
     }
 
     pub fn create_flight_details(&mut self, confirmation_number: String, ticket_number: String, airline: String, 
-        scheduled_time: u64, estimated_departure_time: u64, 
+        estimated_departure_time: u64, 
         actual_departure_time: u64, departure_city: String, arrival_city: String){
+        
+        let scheduled_time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+
+        let current_scheduled_time = Local.timestamp(scheduled_time as i64, 0);
+        let current_plus_three = current_scheduled_time + chrono::Duration::hours(3);
+        let estimated_departure_time = current_plus_three.timestamp() as u64;
+
+
         let flight = FlightDetails {
             id: self.flight_vec.len() as i64,
             confirmation_number,
