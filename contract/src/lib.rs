@@ -271,4 +271,16 @@ impl Contract {
     pub fn get_insurance_details_by_id(&self, id: i64) -> Option<InsuranceDetails> {
         self.insurance_vec.get(id as u64)
     }
+
+    pub fn get_insurance_details_by_wallet(&self, wallet: AccountId) -> Vec<InsuranceDetails> {
+        let mut insurance_details = Vec::new();
+        for i in 0..self.insurance_vec.len() {
+            let insurance = self.insurance_vec.get(i).unwrap();
+            if insurance.wallet == wallet {
+                insurance_details.push(insurance);
+            }
+        }
+        assert!(insurance_details.len() > 0, "No insurance details found");
+        insurance_details
+    }
 }
