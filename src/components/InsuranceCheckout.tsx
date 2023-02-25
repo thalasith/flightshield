@@ -117,7 +117,7 @@ export const InsuranceCheckout = () => {
           </div>
           <div className="flex w-1/2 flex-col text-lg">
             {flightDetails.map((flight) => (
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-2" key={flight.id}>
                 <div className="">
                   <p>Airline</p>
                   <p className="font-bold text-primary">{flight.airline}</p>
