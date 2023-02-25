@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { providers, utils } from "near-api-js";
+import { providers } from "near-api-js";
 import type { AccountView } from "near-api-js/lib/providers/provider";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
 import type { Account } from "../interfaces";
@@ -9,7 +9,6 @@ export const Container = () => {
   const { selector, modal, accounts, accountId } = useWalletSelector();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   const getAccount = useCallback(async (): Promise<Account | null> => {
     if (!accountId) {
