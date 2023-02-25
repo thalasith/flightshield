@@ -9,8 +9,6 @@ import { getFormattedDate, getFormattedTime } from "../utils/helpers";
 interface FlightDetails {
   id: number;
   airline: string;
-  airline_code: string;
-  flightNumber: number;
   confirmation_numbers: string[];
   ticket_numbers: string[];
   scheduled_time: number;
@@ -51,8 +49,6 @@ export const InsuranceCheckout = () => {
       last_name: "Sith",
     });
 
-    // const account = JSON.stringify({ lookup_account: accountId });
-
     const base64 = Buffer.from(args).toString("base64");
 
     return provider
@@ -63,7 +59,10 @@ export const InsuranceCheckout = () => {
         args_base64: base64,
         finality: "optimistic",
       })
-      .then((res) => JSON.parse(Buffer.from(res.result).toString()))
+      .then(
+        (res) =>
+          JSON.parse(Buffer.from(res.result).toString()) as FlightDetails[]
+      )
       .catch((err) => {
         console.log("Failed to get items");
         console.error(err);
@@ -72,10 +71,13 @@ export const InsuranceCheckout = () => {
   }, [selector]);
 
   useEffect(() => {
-    console.log("USE EFFECT");
-    getFlightDetails().then((res) => {
-      console.log(res);
-    });
+    getFlightDetails()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [getFlightDetails]);
 
   const handleContinue = () => {
