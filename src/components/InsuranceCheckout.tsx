@@ -5,17 +5,18 @@ import type { CodeResult } from "near-api-js/lib/providers/provider";
 import { CONTRACT_ID } from "../constants";
 import { getFormattedDate, getFormattedTime } from "../utils/helpers";
 
-// TODO: ADD IN AIRLINE_CODE AND FLIGHT NUMBER INTO THE CONTRACT
+// make interface nullable
 interface FlightDetails {
-  id: number;
-  airline: string;
-  confirmation_numbers: string[];
-  ticket_numbers: string[];
-  scheduled_time: number;
-  estimated_departure_time: number | null;
-  actual_departure_time: number | null;
+  ticket_number: string;
+  confirmation_number: string;
+  flight_id: number;
+  airline_code: string;
+  flight_number: number;
+  first_name: string;
+  last_name: string;
   departure_city: string;
   arrival_city: string;
+  scheduled_time: number;
 }
 
 export const InsuranceCheckout = () => {
@@ -23,7 +24,18 @@ export const InsuranceCheckout = () => {
   const [ticketNumber, setTicketNumber] = useState("");
   const [lastName, setLastName] = useState("");
   const [step, setStep] = useState(1);
-  const [flightDetails, setFlightDetails] = useState<FlightDetails[]>([]);
+  const [flightDetails, setFlightDetails] = useState<FlightDetails>({
+    ticket_number: "",
+    confirmation_number: "",
+    flight_id: 0,
+    airline_code: "",
+    flight_number: 0,
+    first_name: "",
+    last_name: "",
+    departure_city: "",
+    arrival_city: "",
+    scheduled_time: 0,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,8 +52,8 @@ export const InsuranceCheckout = () => {
     const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
     //base64 encoded id
     const args = JSON.stringify({
-      ticket_number: ticketNumber,
-      last_name: lastName,
+      ticket_number: "5554567891234",
+      last_name: "Sith",
     });
 
     const base64 = Buffer.from(args).toString("base64");
@@ -50,13 +62,12 @@ export const InsuranceCheckout = () => {
       .query<CodeResult>({
         request_type: "call_function",
         account_id: CONTRACT_ID,
-        method_name: "get_flight_details_by_journey_ticket_last_name",
+        method_name: "get_helper_by_ticket_last_name",
         args_base64: base64,
         finality: "optimistic",
       })
       .then(
-        (res) =>
-          JSON.parse(Buffer.from(res.result).toString()) as FlightDetails[]
+        (res) => JSON.parse(Buffer.from(res.result).toString()) as FlightDetails
       )
       .catch((err) => {
         console.log("Failed to get items");
@@ -71,14 +82,19 @@ export const InsuranceCheckout = () => {
     }
   };
 
-  const handleContinue = () => {
-    setStep(step + 1);
-    // getFlightDetails();
-    // if (step === 1 && flightDetails.length <= 0) {
-    //   alert("Flight details not found");
-    // } else {
-    //   setStep(step + 1);
-    // }
+  const handleContinue = async () => {
+    if (step === 1) {
+      getFlightDetails().then((res) => {
+        if (Array.isArray(res)) {
+          alert("No flight details found");
+          return;
+        }
+        setFlightDetails(res);
+        setStep(step + 1);
+      });
+    } else {
+      setStep(step + 1);
+    }
   };
 
   const purchaseInsurance = () => {
@@ -97,52 +113,56 @@ export const InsuranceCheckout = () => {
             Please ensure the accuracy of your flight details.
           </div>
           <div className="flex w-1/2 flex-col text-lg">
-            {flightDetails.map((flight) => (
-              <div className="grid grid-cols-2" key={flight.id}>
-                <div className="">
-                  <p>Airline</p>
-                  <p className="font-bold text-primary">{flight.airline}</p>
-                </div>
-                <div>
-                  <p>Flight Number</p>
-                  <p className="font-bold text-primary">
-                    {/* {flightDetails.flightNumber} */}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <p>Departure Flight</p>
-                  <p className="font-bold text-primary">
-                    {getFormattedDate(flight.scheduled_time)}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <p>Departure Time</p>
-                  <p className="font-bold text-primary">
-                    {getFormattedTime(flight.scheduled_time)}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <p>Departing City</p>
-                  <p className="font-bold text-primary">
-                    {flight.departure_city}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <p>Arrival City</p>
-                  <p className="font-bold text-primary">
-                    {flight.arrival_city}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <p>First Name</p>
-                  <p className="font-bold text-primary"></p>
-                </div>
-                <div className="mt-4">
-                  <p>Last NAme</p>
-                  <p className="font-bold text-primary">TealWarlock</p>
-                </div>
+            <div className="grid grid-cols-2">
+              <div className="">
+                <p>Airline</p>
+                <p className="font-bold text-primary">
+                  {flightDetails?.airline_code}
+                </p>
               </div>
-            ))}
+              <div>
+                <p>Flight Number</p>
+                <p className="font-bold text-primary">
+                  {flightDetails?.flight_number}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>Departure Flight</p>
+                <p className="font-bold text-primary">
+                  {getFormattedDate(flightDetails?.scheduled_time || 0)}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>Departure Time</p>
+                <p className="font-bold text-primary">
+                  {getFormattedTime(flightDetails?.scheduled_time || 0)}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>Departing City</p>
+                <p className="font-bold text-primary">
+                  {flightDetails?.departure_city}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>Arrival City</p>
+                <p className="font-bold text-primary">
+                  {flightDetails.arrival_city}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>First Name</p>
+                <p className="font-bold text-primary">
+                  {flightDetails?.first_name}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p>Last Name</p>
+                <p className="font-bold text-primary">
+                  {flightDetails?.last_name}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         {/* TODO: FIX THIS PT-32 */}

@@ -41,6 +41,6 @@ export const getFormattedTime = (timestamp: number) => {
 
   const formattedTime = `${hours || 12}:${
     minutes.toString().padStart(2, "0") || "00"
-  } ${ampm} ||AM`;
+  } ${ampm || "AM"}`;
   return formattedTime;
 };
