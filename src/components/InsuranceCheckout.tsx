@@ -82,16 +82,22 @@ export const InsuranceCheckout = () => {
     }
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (step === 1) {
-      getFlightDetails().then((res) => {
-        if (Array.isArray(res)) {
-          alert("No flight details found");
+      getFlightDetails()
+        .then((res) => {
+          if (Array.isArray(res)) {
+            alert("No flight details found");
+            return;
+          }
+          setFlightDetails(res);
+          setStep(step + 1);
+        })
+        .catch((err) => {
+          console.log("Failed to get flight details");
+          console.error(err);
           return;
-        }
-        setFlightDetails(res);
-        setStep(step + 1);
-      });
+        });
     } else {
       setStep(step + 1);
     }
