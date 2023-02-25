@@ -38,6 +38,16 @@ export const InsuranceCheckout = () => {
   const [lastName, setLastName] = useState("");
   const [step, setStep] = useState(1);
   const [flightDetails, setFlightDetails] = useState(DUMMY_DATA);
+  const [test, setTest] = useState<FlightDetails[]>([]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === "ticketNumber") {
+      setTicketNumber(value);
+    } else if (name === "lastName") {
+      setLastName(value);
+    }
+  };
 
   const getFlightDetails = useCallback(() => {
     const { network } = selector.options;
@@ -72,9 +82,7 @@ export const InsuranceCheckout = () => {
 
   useEffect(() => {
     getFlightDetails()
-      .then((res) => {
-        console.log(res);
-      })
+      .then(setTest)
       .catch((err) => {
         console.log(err);
       });
@@ -88,51 +96,6 @@ export const InsuranceCheckout = () => {
     console.log("Purchasing insurance");
   };
 
-  const FirstSection = () => {
-    return (
-      <div className="mx-8 mt-4 h-1/2 w-full flex-col">
-        <div className=" flex flex-row items-center justify-between border-b border-gray-400 pb-2">
-          <h1 className="text-4xl font-bold">
-            Provide details about your flight
-          </h1>
-          <p className="align-middle">Step 1 of 3</p>
-        </div>
-        <div className="mt-4 flex w-full flex-row ">
-          <div className="w-1/2 text-xl">
-            Please provide us with your flight details.
-          </div>
-          <div className="flex w-1/2 flex-col text-lg">
-            <div>
-              <p>Confirmation Number or eTicket Number</p>
-              <input
-                type="text"
-                name="ticketNumber"
-                // value={ticketNumber}
-                // onChange={(e) => setTicketNumber(e.target.value)}
-                // className="w-full rounded border-2 border-gray-300"
-              />
-            </div>
-            <div className="mt-4">
-              <p>Last Name</p>
-              <input
-                type="text"
-                className="w-full rounded border-2 border-gray-300"
-              />
-            </div>
-          </div>
-        </div>
-        {/* TODO: FIX THIS PT-32 */}
-        <div className="flex justify-end self-end pt-32">
-          <button
-            onClick={() => void handleContinue()}
-            className="mx-1 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-orange-400 px-1 py-1 text-xl font-medium shadow-sm"
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    );
-  };
   const SecondSection = () => {
     return (
       <div className="mx-8 mt-4 h-1/2 w-full flex-col">
@@ -276,7 +239,52 @@ export const InsuranceCheckout = () => {
 
   return (
     <div className="mx-auto my-auto flex h-full w-10/12 text-gray-600">
-      {step === 1 && <FirstSection />}
+      {step === 1 && (
+        <div className="mx-8 mt-4 h-1/2 w-full flex-col">
+          <div className=" flex flex-row items-center justify-between border-b border-gray-400 pb-2">
+            <h1 className="text-4xl font-bold">
+              Provide details about your flight
+            </h1>
+            <p className="align-middle">Step 1 of 3</p>
+          </div>
+          <div className="mt-4 flex w-full flex-row ">
+            <div className="w-1/2 text-xl">
+              Please provide us with your flight details.
+            </div>
+            <div className="flex w-1/2 flex-col text-lg">
+              <div>
+                <p>Confirmation Number or eTicket Number</p>
+                <input
+                  type="text"
+                  name="ticketNumber"
+                  value={ticketNumber}
+                  onChange={(e) => void handleChange(e)}
+                  className="w-full rounded border-2 border-gray-300"
+                />
+              </div>
+              <div className="mt-4">
+                <p>Last Name</p>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={lastName}
+                  onChange={(e) => void handleChange(e)}
+                  className="w-full rounded border-2 border-gray-300"
+                />
+              </div>
+            </div>
+          </div>
+          {/* TODO: FIX THIS PT-32 */}
+          <div className="flex justify-end self-end pt-32">
+            <button
+              onClick={() => void handleContinue()}
+              className="mx-1 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-orange-400 px-1 py-1 text-xl font-medium shadow-sm"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
       {step === 2 && <SecondSection />}
       {step === 3 && <ThirdSection />}
     </div>
