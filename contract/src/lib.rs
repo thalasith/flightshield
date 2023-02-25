@@ -180,6 +180,7 @@ impl Contract {
                 }
             }
         }
+        assert!(flight_details.len() > 0, "No flight details found");
         flight_details
     }
 }
