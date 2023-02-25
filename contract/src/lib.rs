@@ -4,20 +4,23 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, near_bindgen, AccountId};
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
-pub struct Book {
+pub struct JourneyDetails {
     pub id: i64,
-    pub author_name: String,
-    pub book_name: String,
-    pub genre: Genre,
-    pub rented: bool,
+    pub confirmation_number: String,
+    pub ticket_number: String,
+    pub passenger_status: PassengerStatus,
+    pub flight_id: i64,
+    pub first_name: String,
+    pub last_name: String,
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
-pub enum Genre {
-    Fiction,
-    NonFiction,
-    Magazine,
-    Encyclopedia,
-    Map,
+pub enum PassengerStatus {
+    NotCheckedIn,
+    CheckedIn,
+    Cancelled,
+    OnBoard,
+    InFlight,
+    Arrived,
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub enum RentalStatus {
