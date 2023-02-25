@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
 import { providers } from "near-api-js";
 import type { CodeResult } from "near-api-js/lib/providers/provider";
@@ -17,20 +17,6 @@ interface FlightDetails {
   departure_city: string;
   arrival_city: string;
 }
-
-const DUMMY_DATA = {
-  id: 1,
-  airline: "Air Canada",
-  airline_code: "AC",
-  flightNumber: 200,
-  confirmation_numbers: ["ABC123", "DEF456", "GHI789"],
-  ticket_numbers: ["1234567891234", "1234567891235", "1234567891236"],
-  scheduled_time: 1678111200000, // Timestamp in milliseconds for 2023-03-06 06:00:00 (Pacific time)
-  estimated_departure_time: null,
-  actual_departure_time: null,
-  departure_city: "YVR",
-  arrival_city: "YYZ",
-};
 
 export const InsuranceCheckout = () => {
   const { selector, accountId } = useWalletSelector();
@@ -54,8 +40,8 @@ export const InsuranceCheckout = () => {
     const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
     //base64 encoded id
     const args = JSON.stringify({
-      ticket_number: "5554567891234",
-      last_name: "Sith",
+      ticket_number: ticketNumber,
+      last_name: lastName,
     });
 
     const base64 = Buffer.from(args).toString("base64");
@@ -79,25 +65,20 @@ export const InsuranceCheckout = () => {
       });
   }, [selector]);
 
-  useEffect(() => {
-    getFlightDetails()
-      .then(setFlightDetails)
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [getFlightDetails]);
+  const handlePrevious = () => {
+    if (step > 1) {
+      setStep(step - 1);
+    }
+  };
 
   const handleContinue = () => {
-    if (step === 1 && ticketNumber && lastName && flightDetails.length > 0) {
-      // check if ticket number and last name are valid
-      setStep(step + 1);
-    } else if (step === 2) {
-      // purchase insurance
-      purchaseInsurance();
-      setStep(step + 1);
-    } else {
-      alert("Invalid input");
-    }
+    setStep(step + 1);
+    // getFlightDetails();
+    // if (step === 1 && flightDetails.length <= 0) {
+    //   alert("Flight details not found");
+    // } else {
+    //   setStep(step + 1);
+    // }
   };
 
   const purchaseInsurance = () => {
@@ -142,15 +123,19 @@ export const InsuranceCheckout = () => {
                 </div>
                 <div className="mt-4">
                   <p>Departing City</p>
-                  <p className="font-bold text-primary">Vancouver (YVR)</p>
+                  <p className="font-bold text-primary">
+                    {flight.departure_city}
+                  </p>
                 </div>
                 <div className="mt-4">
                   <p>Arrival City</p>
-                  <p className="font-bold text-primary">Calgary (YYC)</p>
+                  <p className="font-bold text-primary">
+                    {flight.arrival_city}
+                  </p>
                 </div>
                 <div className="mt-4">
                   <p>First Name</p>
-                  <p className="font-bold text-primary">Thalasith</p>
+                  <p className="font-bold text-primary"></p>
                 </div>
                 <div className="mt-4">
                   <p>Last NAme</p>
@@ -161,7 +146,13 @@ export const InsuranceCheckout = () => {
           </div>
         </div>
         {/* TODO: FIX THIS PT-32 */}
-        <div className="flex justify-end self-end pt-32">
+        <div className="flex justify-between self-end pt-32">
+          <button
+            onClick={() => void handlePrevious()}
+            className="mx-1 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-orange-400 px-1 py-1 text-xl font-medium shadow-sm"
+          >
+            Back
+          </button>
           <button
             onClick={() => void handleContinue()}
             className="mx-1 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-orange-400 px-1 py-1 text-xl font-medium shadow-sm"

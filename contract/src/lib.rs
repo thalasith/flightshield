@@ -1,7 +1,7 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
-use near_sdk::near_bindgen;
 use near_sdk::serde::{Deserialize, Serialize};
+use near_sdk::{env, near_bindgen, AccountId};
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -15,6 +15,7 @@ pub struct JourneyDetails {
     pub first_name: String,
     pub last_name: String,
 }
+
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub enum PassengerStatus {
     NotCheckedIn,
@@ -35,8 +36,8 @@ pub struct InsuranceDetails {
     pub last_name: String,
     pub first_insurance_paid: bool,
     pub second_insurance_paid: bool,
-    pub premium_amount: i32,
-    pub wallet: String,
+    pub premium_amount: u128,
+    pub wallet: AccountId,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize)]
@@ -58,12 +59,12 @@ pub struct FlightDetails {
 pub struct InsuranceHelper {
     pub ticket_number: String,
     pub confirmation_number: String,
-    pub passenger_status: PassengerStatus,
     pub flight_id: i64,
+    pub first_name: String,
+    pub last_name: String,
+    pub departure_city: String,
+    pub arrival_city: String,
     pub scheduled_time: u64,
-    pub actual_departure_time: u64,
-
-
 }
 
 #[near_bindgen]
@@ -71,7 +72,6 @@ pub struct InsuranceHelper {
 pub struct Contract {
     flight_vec: Vector<FlightDetails>,
     journey_vec: Vector<JourneyDetails>,
-    insurance_help_vec: Vector<InsuranceHelper>,
     insurance_vec: Vector<InsuranceDetails>,
 }
 
@@ -80,13 +80,10 @@ impl Default for Contract {
         Self {
             flight_vec: Vector::new(b"n"),
             journey_vec: Vector::new(b"m"),
-            insurance_help_vec: Vector::new(b"o"),
             insurance_vec: Vector::new(b"p"),
         }
     }
 }
-
-
 
 #[near_bindgen]
 impl Contract {
@@ -206,26 +203,72 @@ impl Contract {
         flight_details
     }
 
-    pub fn create_insurance_helper(&mut self, journey_id: i64, flight_id: i64){
-        let flight = self.flight_vec.get(flight_id as u64).unwrap();
-        let journey = self.journey_vec.get(journey_id as u64).unwrap();
+    pub fn get_journey_details_by_ticket_last_name(
+        &self,
+        ticket_number: String,
+        last_name: String,
+    ) -> Option<JourneyDetails> {
+        for i in 0..self.journey_vec.len() {
+            let journey = self.journey_vec.get(i).unwrap();
+            if journey.ticket_number == ticket_number && journey.last_name == last_name {
+                return Some(journey);
+            }
+        }
+        None
+    }
+
+    pub fn get_helper_by_ticket_last_name(
+        &self,
+        ticket_number: String,
+        last_name: String,
+    ) -> Option<InsuranceHelper> {
+        let journey = self.get_journey_details_by_ticket_last_name(ticket_number, last_name);
+        if journey.is_none() {
+            return None;
+        }
+        let journey = journey.unwrap();
+        let flight = self.flight_vec.get(journey.flight_ids[0] as u64).unwrap();
         let insurance_helper = InsuranceHelper {
             ticket_number: journey.ticket_number.clone(),
             confirmation_number: journey.confirmation_number.clone(),
-            passenger_status: journey.passenger_status.clone(),
             flight_id: flight.id.clone(),
+            first_name: journey.first_name.clone(),
+            last_name: journey.last_name.clone(),
+            departure_city: journey.origin_city.clone(),
+            arrival_city: journey.destination_city.clone(),
             scheduled_time: flight.scheduled_time.clone(),
-            actual_departure_time: flight.actual_departure_time.clone(),
-
         };
-        self.insurance_help_vec.push(&insurance_helper);
-        
+        Some(insurance_helper)
     }
 
-    pub fn get_insurance_helper_details(&self, id: i64) -> Option<InsuranceHelper> {
-        self.insurance_help_vec.get(id as u64)
+    #[payable]
+    pub fn create_insurance_details(
+        &mut self,
+        confirmation_number: String,
+        ticket_number: String,
+        last_name: String,
+        first_name: String,
+        flight_id: i64,
+    ) {
+        // assert that the deposit is more than 0
+        assert!(env::attached_deposit() > 0, "Deposit must be more than 0");
+
+        let insurance_details = InsuranceDetails {
+            id: self.insurance_vec.len() as i64,
+            confirmation_number: confirmation_number.clone(),
+            ticket_number: ticket_number.clone(),
+            flight_id: flight_id,
+            first_name: first_name.clone(),
+            last_name: last_name.clone(),
+            first_insurance_paid: false,
+            second_insurance_paid: false,
+            premium_amount: env::attached_deposit(),
+            wallet: env::signer_account_id(),
+        };
+        self.insurance_vec.push(&insurance_details);
     }
-    // pub fn create_insurance_details(&mut self, confirmation_number: String, ticket_number: String, last_name: String) {
-        
-    // }
+
+    pub fn get_insurance_details_by_id(&self, id: i64) -> Option<InsuranceDetails> {
+        self.insurance_vec.get(id as u64)
+    }
 }
