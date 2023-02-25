@@ -1,9 +1,8 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{Vector, LookupMap};
+use near_sdk::collections::Vector;
+use near_sdk::near_bindgen;
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, AccountId};
-use std::time::SystemTime;
-use chrono::{DateTime,Local, TimeZone};
+// use std::time::SystemTime;
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -11,11 +10,10 @@ pub struct JourneyDetails {
     pub confirmation_number: String,
     pub ticket_number: String,
     pub passenger_status: PassengerStatus,
-    pub flight_id: i64,
-    pub first_name: String,
+    pub flight_ids: Vec<i64>,
     pub origin_city: String,
     pub destination_city: String,
-    pub connections: Option<String>,
+    pub first_name: String,
     pub last_name: String,
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
@@ -27,6 +25,7 @@ pub enum PassengerStatus {
     InFlight,
     Arrived,
 }
+
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct InsuranceDetails {
     pub id: i64,
@@ -38,21 +37,20 @@ pub struct InsuranceDetails {
     pub first_insurance_paid: bool,
     pub second_insurance_paid: bool,
     pub premium_amount: i32,
-    pub wallet: String
+    pub wallet: String,
 }
+
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize)]
 pub struct FlightDetails {
     pub id: i64,
-    pub confirmation_number: String,
-    pub ticket_number: String,
+    pub confirmation_number: Option<Vec<String>>,
+    pub ticket_number: Option<Vec<String>>,
     pub airline: String,
     pub scheduled_time: u64,
     pub estimated_departure_time: u64,
     pub actual_departure_time: u64,
     pub departure_city: String,
-    pub arrival_city: String
-
-
+    pub arrival_city: String,
 }
 
 #[near_bindgen]
@@ -60,7 +58,7 @@ pub struct FlightDetails {
 pub struct Contract {
     flight_vec: Vector<FlightDetails>,
     journey_vec: Vector<JourneyDetails>,
-    insurance_vec: Vector<InsuranceDetails>
+    insurance_vec: Vector<InsuranceDetails>,
 }
 
 impl Default for Contract {
@@ -79,32 +77,105 @@ impl Contract {
         println!("Iterate over json objects, populate vectors");
     }
 
-    pub fn create_flight_details(&mut self, confirmation_number: String, ticket_number: String, airline: String, 
-        estimated_departure_time: u64, 
-        actual_departure_time: u64, departure_city: String, arrival_city: String){
-        
-        let scheduled_time = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-
-        let current_scheduled_time = Local.timestamp(scheduled_time as i64, 0);
-        let current_plus_three = current_scheduled_time + chrono::Duration::hours(3);
-        let estimated_departure_time = current_plus_three.timestamp() as u64;
-
-
+    pub fn create_flight_details(
+        &mut self,
+        airline: String,
+        scheduled_time: u64,
+        departure_city: String,
+        arrival_city: String,
+    ) {
         let flight = FlightDetails {
             id: self.flight_vec.len() as i64,
-            confirmation_number,
-            ticket_number,
+            confirmation_number: None,
+            ticket_number: None,
             airline,
             scheduled_time,
-            estimated_departure_time,
-            actual_departure_time,
+            estimated_departure_time: scheduled_time,
+            actual_departure_time: scheduled_time,
             departure_city,
-            arrival_city
+            arrival_city,
         };
         self.flight_vec.push(&flight)
+    }
 
+    pub fn add_confirmation_code(&mut self, flight_id: i64, confirmation_code: String) {
+        let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
+        let mut confirmation_code_vec = flight.confirmation_number.unwrap_or_default();
+        confirmation_code_vec.push(confirmation_code);
+        flight.confirmation_number = Some(confirmation_code_vec);
+        self.flight_vec.replace(flight_id as u64, &flight);
+    }
+
+    pub fn add_ticket_number(&mut self, flight_id: i64, ticket_number: String) {
+        let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
+        let mut ticket_number_vec = flight.ticket_number.unwrap_or_default();
+        ticket_number_vec.push(ticket_number);
+        flight.ticket_number = Some(ticket_number_vec);
+        self.flight_vec.replace(flight_id as u64, &flight);
+    }
+
+    pub fn get_flight_details(&self, id: i64) -> Option<FlightDetails> {
+        self.flight_vec.get(id as u64)
+    }
+
+    pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
+        let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
+        flight.estimated_departure_time = new_time;
+        self.flight_vec.replace(flight_id as u64, &flight);
+    }
+
+    pub fn change_actual_departure_time(&mut self, flight_id: i64, new_time: u64) {
+        let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
+        flight.actual_departure_time = new_time;
+        self.flight_vec.replace(flight_id as u64, &flight);
+    }
+
+    pub fn create_journey_details(
+        &mut self,
+        confirmation_number: String,
+        ticket_number: String,
+        flight_ids: Vec<i64>,
+        origin_city: String,
+        destination_city: String,
+        first_name: String,
+        last_name: String,
+    ) {
+        let new_flight_ids = flight_ids.clone();
+        let journey = JourneyDetails {
+            id: self.journey_vec.len() as i64,
+            confirmation_number,
+            ticket_number,
+            passenger_status: PassengerStatus::NotCheckedIn,
+            flight_ids,
+            origin_city,
+            destination_city,
+            first_name,
+            last_name,
+        };
+        self.journey_vec.push(&journey);
+
+        // for every flight, push the confirmation code to the flight_Details
+        for flight_id in new_flight_ids {
+            self.add_confirmation_code(flight_id, journey.confirmation_number.clone());
+            self.add_ticket_number(flight_id, journey.ticket_number.clone());
+        }
+    }
+
+    pub fn get_journey_details(&self, id: i64) -> Option<JourneyDetails> {
+        self.journey_vec.get(id as u64)
+    }
+
+    pub fn get_journey_details_by_ticket_number(
+        &self,
+        ticket_number: String,
+        last_name: String,
+    ) -> Option<JourneyDetails> {
+        for i in 0..self.journey_vec.len() {
+            let journey = self.journey_vec.get(i).unwrap();
+            if journey.ticket_number == ticket_number {
+                return Some(journey);
+            }
+        }
+        None
     }
 }
