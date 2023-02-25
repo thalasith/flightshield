@@ -23,18 +23,17 @@ pub enum PassengerStatus {
     Arrived,
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
-pub enum RentalStatus {
-    InGoodStanding,
-    Delinquent,
-}
-
-#[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
-pub struct User {
+pub struct InsuranceDetails {
     pub id: i64,
-    pub user: String,
-    pub dob: i64,
-    pub rental_status: RentalStatus,
-    pub accountNumber: AccountId,
+    pub confirmation_number: String,
+    pub ticket_number: String,
+    pub flight_id: i64,
+    pub first_name: String,
+    pub last_name: String,
+    pub first_insurance_paid: bool,
+    pub second_insurance_paid: bool,
+    pub premium_amount: i32,
+    pub wallet: String
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct Rent {
