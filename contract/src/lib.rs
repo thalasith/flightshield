@@ -2,7 +2,6 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
 use near_sdk::near_bindgen;
 use near_sdk::serde::{Deserialize, Serialize};
-// use std::time::SystemTime;
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -114,7 +113,7 @@ impl Contract {
         self.flight_vec.replace(flight_id as u64, &flight);
     }
 
-    pub fn get_flight_details(&self, id: i64) -> Option<FlightDetails> {
+    pub fn get_flight_details_by_id(&self, id: i64) -> Option<FlightDetails> {
         self.flight_vec.get(id as u64)
     }
 
@@ -165,17 +164,22 @@ impl Contract {
         self.journey_vec.get(id as u64)
     }
 
-    pub fn get_journey_details_by_ticket_number(
+    // return a list of flight details from the journey's flight_ids
+    pub fn get_flight_details_by_journey_ticket_last_name(
         &self,
         ticket_number: String,
         last_name: String,
-    ) -> Option<JourneyDetails> {
+    ) -> Vec<FlightDetails> {
+        let mut flight_details = Vec::new();
         for i in 0..self.journey_vec.len() {
             let journey = self.journey_vec.get(i).unwrap();
-            if journey.ticket_number == ticket_number {
-                return Some(journey);
+            if journey.ticket_number == ticket_number && journey.last_name == last_name {
+                for flight_id in journey.flight_ids {
+                    let flight = self.flight_vec.get(flight_id as u64).unwrap();
+                    flight_details.push(flight);
+                }
             }
         }
-        None
+        flight_details
     }
 }
