@@ -37,8 +37,7 @@ export const InsuranceCheckout = () => {
   const [ticketNumber, setTicketNumber] = useState("");
   const [lastName, setLastName] = useState("");
   const [step, setStep] = useState(1);
-  const [flightDetails, setFlightDetails] = useState(DUMMY_DATA);
-  const [test, setTest] = useState<FlightDetails[]>([]);
+  const [flightDetails, setFlightDetails] = useState<FlightDetails[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,14 +81,23 @@ export const InsuranceCheckout = () => {
 
   useEffect(() => {
     getFlightDetails()
-      .then(setTest)
+      .then(setFlightDetails)
       .catch((err) => {
         console.log(err);
       });
   }, [getFlightDetails]);
 
   const handleContinue = () => {
-    setStep(step + 1);
+    if (step === 1 && ticketNumber && lastName && flightDetails.length > 0) {
+      // check if ticket number and last name are valid
+      setStep(step + 1);
+    } else if (step === 2) {
+      // purchase insurance
+      purchaseInsurance();
+      setStep(step + 1);
+    } else {
+      alert("Invalid input");
+    }
   };
 
   const purchaseInsurance = () => {
@@ -108,48 +116,48 @@ export const InsuranceCheckout = () => {
             Please ensure the accuracy of your flight details.
           </div>
           <div className="flex w-1/2 flex-col text-lg">
-            <div className="grid grid-cols-2">
-              <div className="">
-                <p>Airline</p>
-                <p className="font-bold text-primary">
-                  {flightDetails.airline}
-                </p>
+            {flightDetails.map((flight) => (
+              <div className="grid grid-cols-2">
+                <div className="">
+                  <p>Airline</p>
+                  <p className="font-bold text-primary">{flight.airline}</p>
+                </div>
+                <div>
+                  <p>Flight Number</p>
+                  <p className="font-bold text-primary">
+                    {/* {flightDetails.flightNumber} */}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p>Departure Flight</p>
+                  <p className="font-bold text-primary">
+                    {getFormattedDate(flight.scheduled_time)}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p>Departure Time</p>
+                  <p className="font-bold text-primary">
+                    {getFormattedTime(flight.scheduled_time)}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p>Departing City</p>
+                  <p className="font-bold text-primary">Vancouver (YVR)</p>
+                </div>
+                <div className="mt-4">
+                  <p>Arrival City</p>
+                  <p className="font-bold text-primary">Calgary (YYC)</p>
+                </div>
+                <div className="mt-4">
+                  <p>First Name</p>
+                  <p className="font-bold text-primary">Thalasith</p>
+                </div>
+                <div className="mt-4">
+                  <p>Last NAme</p>
+                  <p className="font-bold text-primary">TealWarlock</p>
+                </div>
               </div>
-              <div>
-                <p>Flight Number</p>
-                <p className="font-bold text-primary">
-                  {flightDetails.flightNumber}
-                </p>
-              </div>
-              <div className="mt-4">
-                <p>Departure Flight</p>
-                <p className="font-bold text-primary">
-                  {getFormattedDate(flightDetails.scheduled_time)}
-                </p>
-              </div>
-              <div className="mt-4">
-                <p>Departure Time</p>
-                <p className="font-bold text-primary">
-                  {getFormattedTime(flightDetails.scheduled_time)}
-                </p>
-              </div>
-              <div className="mt-4">
-                <p>Departing City</p>
-                <p className="font-bold text-primary">Vancouver (YVR)</p>
-              </div>
-              <div className="mt-4">
-                <p>Arrival City</p>
-                <p className="font-bold text-primary">Calgary (YYC)</p>
-              </div>
-              <div className="mt-4">
-                <p>First Name</p>
-                <p className="font-bold text-primary">Thalasith</p>
-              </div>
-              <div className="mt-4">
-                <p>Last NAme</p>
-                <p className="font-bold text-primary">TealWarlock</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         {/* TODO: FIX THIS PT-32 */}

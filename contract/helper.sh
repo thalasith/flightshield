@@ -1,6 +1,6 @@
 # Create flight details
-near call dev-1677343906277-35729623103836 create_flight_details '{"airline": "Westjet", "scheduled_time": 1678111200000, "departure_city": "Vancouver", "arrival_city": "Manila"}' --accountId XYZ.testnet
-near call dev-1677343906277-35729623103836 create_flight_details '{"airline": "Air Canada", "scheduled_time": 1678111200000, "departure_city": "Calgary", "arrival_city": "Vancouver"}' --accountId thalassiel.testnet
+near call dev-1677343906277-35729623103836 create_flight_details '{"airline": "Westjet", "airline_code": "WS", "flight_number": 200, "scheduled_time": 1678111200000, "departure_city": "Vancouver", "arrival_city": "Manila"}' --accountId XYZ.testnet
+near call dev-1677343906277-35729623103836 create_flight_details '{"airline": "Air Canada", "airline_code": "AC", "flight_number": 123, "scheduled_time": 1678111200000, "departure_city": "Calgary", "arrival_city": "Vancouver"}' --accountId thalassiel.testnet
 
 # Get flight details
 near view dev-1677343906277-35729623103836 get_flight_details_by_id '{"id": 0}' --accountId XYZ.testnet
