@@ -50,6 +50,20 @@ pub struct FlightDetails {
     pub actual_departure_time: u64,
     pub departure_city: String,
     pub arrival_city: String,
+    pub airline_code: String,
+    pub flight_number: u64,
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize)]
+pub struct InsuranceHelper {
+    pub ticket_number: String,
+    pub confirmation_number: String,
+    pub passenger_status: PassengerStatus,
+    pub flight_id: i64,
+    pub scheduled_time: u64,
+    pub actual_departure_time: u64,
+
+
 }
 
 #[near_bindgen]
@@ -57,6 +71,7 @@ pub struct FlightDetails {
 pub struct Contract {
     flight_vec: Vector<FlightDetails>,
     journey_vec: Vector<JourneyDetails>,
+    insurance_help_vec: Vector<InsuranceHelper>,
     insurance_vec: Vector<InsuranceDetails>,
 }
 
@@ -65,10 +80,13 @@ impl Default for Contract {
         Self {
             flight_vec: Vector::new(b"n"),
             journey_vec: Vector::new(b"m"),
-            insurance_vec: Vector::new(b"o"),
+            insurance_help_vec: Vector::new(b"o"),
+            insurance_vec: Vector::new(b"p"),
         }
     }
 }
+
+
 
 #[near_bindgen]
 impl Contract {
@@ -80,6 +98,8 @@ impl Contract {
         &mut self,
         airline: String,
         scheduled_time: u64,
+        airline_code: String,
+        flight_number: u64,
         departure_city: String,
         arrival_city: String,
     ) {
@@ -89,6 +109,8 @@ impl Contract {
             ticket_number: None,
             airline,
             scheduled_time,
+            flight_number,
+            airline_code,
             estimated_departure_time: scheduled_time,
             actual_departure_time: scheduled_time,
             departure_city,
@@ -183,4 +205,27 @@ impl Contract {
         assert!(flight_details.len() > 0, "No flight details found");
         flight_details
     }
+
+    pub fn create_insurance_helper(&mut self, journey_id: i64, flight_id: i64){
+        let flight = self.flight_vec.get(flight_id as u64).unwrap();
+        let journey = self.journey_vec.get(journey_id as u64).unwrap();
+        let insurance_helper = InsuranceHelper {
+            ticket_number: journey.ticket_number.clone(),
+            confirmation_number: journey.confirmation_number.clone(),
+            passenger_status: journey.passenger_status.clone(),
+            flight_id: flight.id.clone(),
+            scheduled_time: flight.scheduled_time.clone(),
+            actual_departure_time: flight.actual_departure_time.clone(),
+
+        };
+        self.insurance_help_vec.push(&insurance_helper);
+        
+    }
+
+    pub fn get_insurance_helper_details(&self, id: i64) -> Option<InsuranceHelper> {
+        self.insurance_help_vec.get(id as u64)
+    }
+    // pub fn create_insurance_details(&mut self, confirmation_number: String, ticket_number: String, last_name: String) {
+        
+    // }
 }
