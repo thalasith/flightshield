@@ -1,5 +1,24 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useWalletSelector } from "../contexts/WalletSelectorContext";
+import { providers } from "near-api-js";
+import type { CodeResult } from "near-api-js/lib/providers/provider";
+import { CONTRACT_ID } from "../constants";
 import { getFormattedDate, getFormattedTime } from "../utils/helpers";
+
+// TODO: ADD IN AIRLINE_CODE AND FLIGHT NUMBER INTO THE CONTRACT
+interface FlightDetails {
+  id: number;
+  airline: string;
+  airline_code: string;
+  flightNumber: number;
+  confirmation_numbers: string[];
+  ticket_numbers: string[];
+  scheduled_time: number;
+  estimated_departure_time: number | null;
+  actual_departure_time: number | null;
+  departure_city: string;
+  arrival_city: string;
+}
 
 const DUMMY_DATA = {
   id: 1,
@@ -16,8 +35,48 @@ const DUMMY_DATA = {
 };
 
 export const InsuranceCheckout = () => {
+  const { selector, accountId } = useWalletSelector();
+  const [ticketNumber, setTicketNumber] = useState("");
+  const [lastName, setLastName] = useState("");
   const [step, setStep] = useState(1);
   const [flightDetails, setFlightDetails] = useState(DUMMY_DATA);
+
+  const getFlightDetails = useCallback(() => {
+    const { network } = selector.options;
+
+    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+    //base64 encoded id
+    const args = JSON.stringify({
+      ticket_number: "5554567891234",
+      last_name: "Sith",
+    });
+
+    // const account = JSON.stringify({ lookup_account: accountId });
+
+    const base64 = Buffer.from(args).toString("base64");
+
+    return provider
+      .query<CodeResult>({
+        request_type: "call_function",
+        account_id: CONTRACT_ID,
+        method_name: "get_flight_details_by_journey_ticket_last_name",
+        args_base64: base64,
+        finality: "optimistic",
+      })
+      .then((res) => JSON.parse(Buffer.from(res.result).toString()))
+      .catch((err) => {
+        console.log("Failed to get items");
+        console.error(err);
+        return [];
+      });
+  }, [selector]);
+
+  useEffect(() => {
+    console.log("USE EFFECT");
+    getFlightDetails().then((res) => {
+      console.log(res);
+    });
+  }, [getFlightDetails]);
 
   const handleContinue = () => {
     setStep(step + 1);
@@ -45,7 +104,10 @@ export const InsuranceCheckout = () => {
               <p>Confirmation Number or eTicket Number</p>
               <input
                 type="text"
-                className="w-full rounded border-2 border-gray-300"
+                name="ticketNumber"
+                // value={ticketNumber}
+                // onChange={(e) => setTicketNumber(e.target.value)}
+                // className="w-full rounded border-2 border-gray-300"
               />
             </div>
             <div className="mt-4">
