@@ -19,9 +19,10 @@ export const getFormattedDate = (timestamp: number) => {
   const day = date.getDate();
   const year = date.getFullYear();
 
-  const formattedDate = `${month} ${day.toString().padStart(2, "0")}, ${year}`;
+  const formattedDate =
+    `${month} ${day.toString().padStart(2, "0")}, ${year}` || "";
 
-  return formattedDate || "";
+  return formattedDate;
 };
 
 export const getFormattedTime = (timestamp: number) => {
@@ -37,8 +38,7 @@ export const getFormattedTime = (timestamp: number) => {
     hours = 12;
   }
 
-  const formattedTime = `${hours}:${minutes
-    .toString()
-    .padStart(2, "0")} ${ampm}`;
-  return formattedTime || "";
+  const formattedTime =
+    `${hours}:${minutes.toString().padStart(2, "0")} ${ampm}` || "";
+  return formattedTime;
 };
