@@ -36,12 +36,18 @@ pub struct InsuranceDetails {
     pub wallet: String
 }
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
-pub struct Rent {
+pub struct FlightDetails {
     pub id: i64,
-    pub book_id: i64,
-    pub user_id: i64,
-    pub rental_start_time: u64,
-    pub rental_end_time: u64,
+    pub confirmation_numbers: Vector<String>,
+    pub ticket_numbers: Vector<String>,
+    pub airline: String,
+    pub scheduled_time: u64,
+    pub estimated_departure_time: Option<u64>,
+    pub actual_departure_time: Option<u64>,
+    pub departure_city: String,
+    pub arrival_city: String
+
+
 }
 
 #[near_bindgen]
