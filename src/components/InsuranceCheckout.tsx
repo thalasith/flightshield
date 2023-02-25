@@ -6,11 +6,13 @@ const DUMMY_DATA = {
   airline: "Air Canada",
   airline_code: "AC",
   flightNumber: 200,
+  confirmation_numbers: ["ABC123", "DEF456", "GHI789"],
+  ticket_numbers: ["1234567891234", "1234567891235", "1234567891236"],
   scheduled_time: 1678111200000, // Timestamp in milliseconds for 2023-03-06 06:00:00 (Pacific time)
-  departure_airport: "YVR",
-  arrival_airport: "YYZ",
-  first_name: "Thalasith",
-  last_name: "TealWarlock",
+  estimated_departure_time: null,
+  actual_departure_time: null,
+  departure_city: "YVR",
+  arrival_city: "YYZ",
 };
 
 export const InsuranceCheckout = () => {
