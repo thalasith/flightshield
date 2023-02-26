@@ -40,6 +40,25 @@ pub struct InsuranceDetails {
     pub wallet: AccountId,
 }
 
+#[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
+pub struct InsuranceViewDetails {
+    pub id: i64,
+    pub confirmation_number: String,
+    pub ticket_number: String,
+    pub flight_id: i64,
+    pub departure_city: String,
+    pub arrival_city: String,
+    pub scheduled_time: u64,
+    pub current_scheduled_time: u64,
+    pub passenger_status: PassengerStatus,
+    pub first_name: String,
+    pub last_name: String,
+    pub first_insurance_paid: bool,
+    pub second_insurance_paid: bool,
+    pub premium_amount: u128,
+    pub wallet: AccountId,
+}
+
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize)]
 pub struct FlightDetails {
     pub id: i64,
@@ -138,8 +157,14 @@ impl Contract {
         self.flight_vec.get(id as u64)
     }
 
-    pub fn get_journey_details_by_confirmation_number(&self, confirmation_number: String) -> Option<JourneyDetails> {
-        self.journey_vec.iter().find(|journey| journey.confirmation_number == confirmation_number).clone()
+    pub fn get_journey_details_by_confirmation_number(
+        &self,
+        confirmation_number: String,
+    ) -> Option<JourneyDetails> {
+        self.journey_vec
+            .iter()
+            .find(|journey| journey.confirmation_number == confirmation_number)
+            .clone()
     }
 
     pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
@@ -286,6 +311,53 @@ impl Contract {
             let insurance = self.insurance_vec.get(i).unwrap();
             if insurance.wallet == wallet {
                 insurance_details.push(insurance);
+            }
+        }
+        assert!(insurance_details.len() > 0, "No insurance details found");
+        insurance_details
+    }
+
+    pub fn get_insurance_view_details_by_wallet(
+        &self,
+        wallet: AccountId,
+    ) -> Vec<InsuranceViewDetails> {
+        let mut insurance_details = Vec::new();
+        for i in 0..self.insurance_vec.len() {
+            let insurance = self.insurance_vec.get(i).unwrap();
+            if insurance.wallet == wallet {
+                let flight = self.flight_vec.get(insurance.flight_id as u64).unwrap();
+                // get the latest flight time
+                let flight_times = [
+                    flight.scheduled_time.clone(),
+                    flight.estimated_departure_time.clone(),
+                    flight.actual_departure_time.clone(),
+                ];
+                // query the
+                let latest_flight_time = *flight_times.iter().max().unwrap();
+                // get the journey details by ticket number and last name
+                let journey = self.get_journey_details_by_ticket_last_name(
+                    insurance.ticket_number.clone(),
+                    insurance.last_name.clone(),
+                );
+
+                let insurance_view_details = InsuranceViewDetails {
+                    id: insurance.id,
+                    confirmation_number: insurance.confirmation_number.clone(),
+                    ticket_number: insurance.ticket_number.clone(),
+                    flight_id: insurance.flight_id,
+                    first_name: insurance.first_name.clone(),
+                    last_name: insurance.last_name.clone(),
+                    current_scheduled_time: latest_flight_time,
+                    passenger_status: journey.unwrap().passenger_status.clone(),
+                    first_insurance_paid: insurance.first_insurance_paid,
+                    second_insurance_paid: insurance.second_insurance_paid,
+                    premium_amount: insurance.premium_amount,
+                    departure_city: flight.departure_city.clone(),
+                    arrival_city: flight.arrival_city.clone(),
+                    scheduled_time: flight.scheduled_time.clone(),
+                    wallet: insurance.wallet.clone(),
+                };
+                insurance_details.push(insurance_view_details);
             }
         }
         assert!(insurance_details.len() > 0, "No insurance details found");

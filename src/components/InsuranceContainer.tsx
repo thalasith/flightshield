@@ -28,7 +28,7 @@ export const InsuranceContainer = () => {
       .query<CodeResult>({
         request_type: "call_function",
         account_id: CONTRACT_ID,
-        method_name: "get_insurance_details_by_wallet",
+        method_name: "get_insurance_view_details_by_wallet",
         args_base64: base64,
         finality: "optimistic",
       })
@@ -56,13 +56,16 @@ export const InsuranceContainer = () => {
 
   const InsuranceDetails = (props: { insurance: InsuranceType }) => {
     const { insurance } = props;
+    console.log(insurance);
     return <div>Hi there!</div>;
   };
 
   return (
     <div className="mx-auto my-auto flex h-full w-10/12 text-gray-600 ">
-      {insurance.length < 0 && <div>No insurance purchased! </div>}
-      <div className="flex flex-col">
+      <div className="flex flex-col pl-8 pt-8">
+        <div className="pb-8 text-2xl font-bold">Your Insurance</div>
+        {insurance.length < 0 && <div>No insurance purchased! </div>}
+
         {insurance.map((item) => {
           return <InsuranceDetails key={item.id} insurance={item} />;
         })}

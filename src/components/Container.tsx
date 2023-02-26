@@ -78,7 +78,7 @@ export const Container = () => {
 
   const BuyInsurance = () => {
     return (
-      <Link href="/insurance_details">
+      <Link href="/insurance_checkout">
         <button className="mx-1 mb-24 inline-flex items-center justify-center whitespace-nowrap rounded-lg border-4 border-transparent border-primary bg-slate-200 px-4 py-2 text-2xl font-bold text-primary shadow-sm hover:bg-orange-400">
           Purchase Insurance
         </button>

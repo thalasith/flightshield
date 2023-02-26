@@ -66,40 +66,43 @@ export const InsuranceCheckout = () => {
       });
   }, [selector]);
 
-  const setInsurance = useCallback(async () => {
-    const wallet = await selector.wallet();
+  const setInsurance = useCallback(
+    async (flightInfo: FlightDetails) => {
+      const wallet = await selector.wallet();
 
-    const test = {
-      ticket_number: flightDetails.ticket_number,
-      confirmation_number: flightDetails.confirmation_number,
-      flight_id: flightDetails.flight_id,
-      last_name: flightDetails.last_name,
-      first_name: flightDetails.first_name,
-    };
+      const insuranceInfo = {
+        ticket_number: flightInfo.ticket_number,
+        confirmation_number: flightInfo.confirmation_number,
+        flight_id: flightInfo.flight_id,
+        last_name: flightInfo.last_name,
+        first_name: flightInfo.first_name,
+      };
 
-    return wallet
-      .signAndSendTransaction({
-        signerId: accountId!,
-        receiverId: CONTRACT_ID,
-        callbackUrl: "https://flightshield.vercel.app/test",
-        actions: [
-          {
-            type: "FunctionCall",
-            params: {
-              methodName: "create_insurance_details",
-              args: test,
-              gas: BOATLOAD_OF_GAS,
-              deposit: parseNearAmount("5")!,
+      return wallet
+        .signAndSendTransaction({
+          signerId: accountId!,
+          receiverId: CONTRACT_ID,
+          callbackUrl: "https://flightshield.vercel.app/test",
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "create_insurance_details",
+                args: insuranceInfo,
+                gas: BOATLOAD_OF_GAS,
+                deposit: parseNearAmount("1")!,
+              },
             },
-          },
-        ],
-      })
-      .catch((err) => {
-        alert(err);
-        console.log(err);
-        throw err;
-      });
-  }, [selector]);
+          ],
+        })
+        .catch((err) => {
+          alert(err);
+          console.log(err);
+          throw err;
+        });
+    },
+    [selector]
+  );
 
   const handlePrevious = () => {
     if (step > 1) {
@@ -129,10 +132,8 @@ export const InsuranceCheckout = () => {
   };
 
   const purchaseInsurance = () => {
-    setInsurance()
-      .then((res) => {
-        console.log(res);
-      })
+    setInsurance(flightDetails)
+      .then((res) => {})
       .catch((err) => {
         console.log("Failed to purchase insurance");
         console.error(err);
