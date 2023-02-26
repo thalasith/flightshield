@@ -145,7 +145,7 @@ export const InsuranceCheckout = () => {
   };
 
   const purchaseInsurance = () => {
-    setInsurance();
+    // setInsurance();
     console.log("Purchasing insurance");
   };
 
