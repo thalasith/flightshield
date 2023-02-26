@@ -7,19 +7,7 @@ import { getFormattedDate, getFormattedTime } from "../utils/helpers";
 import { utils } from "near-api-js";
 const BOATLOAD_OF_GAS = utils.format.parseNearAmount("0.00000000003")!;
 import { parseNearAmount } from "near-api-js/lib/utils/format";
-// make interface nullable
-interface FlightDetails {
-  ticket_number: string;
-  confirmation_number: string;
-  flight_id: number;
-  airline_code: string;
-  flight_number: number;
-  first_name: string;
-  last_name: string;
-  departure_city: string;
-  arrival_city: string;
-  scheduled_time: number;
-}
+import { FlightDetails } from "~/interfaces";
 
 export const InsuranceCheckout = () => {
   const { selector, accountId } = useWalletSelector();
@@ -141,7 +129,14 @@ export const InsuranceCheckout = () => {
   };
 
   const purchaseInsurance = () => {
-    setInsurance();
+    setInsurance()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log("Failed to purchase insurance");
+        console.error(err);
+      });
     console.log("Purchasing insurance");
   };
 
