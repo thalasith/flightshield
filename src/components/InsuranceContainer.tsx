@@ -44,14 +44,19 @@ export const InsuranceContainer = () => {
   }, [selector]);
 
   useEffect(() => {
-    getInsurance().then((res) => {
-      setInsurance(res);
-    });
+    getInsurance()
+      .then((res) => {
+        setInsurance(res);
+      })
+      .catch((err) => {
+        console.log("Failed to get items");
+        console.error(err);
+      });
   }, [getInsurance]);
 
   const InsuranceDetails = (props: { insurance: InsuranceType }) => {
     const { insurance } = props;
-    return <div id={insurance.id.toString()}>Hi there!</div>;
+    return <div>Hi there!</div>;
   };
 
   return (
@@ -59,7 +64,9 @@ export const InsuranceContainer = () => {
       {insurance.length < 0 && <div>No insurance purchased! </div>}
       <div className="flex flex-col">
         {insurance.map((item) => {
-          return <InsuranceDetails insurance={item as InsuranceType} />;
+          return (
+            <InsuranceDetails key={item.id} insurance={item as InsuranceType} />
+          );
         })}
       </div>
     </div>
