@@ -138,6 +138,11 @@ impl Contract {
         self.flight_vec.get(id as u64)
     }
 
+    pub fn get_confirmation_number(&self, id: i64) -> String {
+        let journey = self.journey_vec.get(id as u64).unwrap();
+        journey.confirmation_number
+    }
+
     pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
         let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
         flight.estimated_departure_time = new_time;
@@ -232,7 +237,7 @@ impl Contract {
         let flight = self.flight_vec.get(journey.flight_ids[0] as u64).unwrap();
         let insurance_helper = InsuranceHelper {
             ticket_number: journey.ticket_number.clone(),
-            confirmation_number: journey.confirmation_number.clone(),
+            confirmation_number: self.get_confirmation_number(journey.id),
             flight_id: flight.id.clone(),
             airline_code: flight.airline_code.clone(),
             flight_number: flight.flight_number.clone(),
