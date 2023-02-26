@@ -64,9 +64,7 @@ export const InsuranceContainer = () => {
       {insurance.length < 0 && <div>No insurance purchased! </div>}
       <div className="flex flex-col">
         {insurance.map((item) => {
-          return (
-            <InsuranceDetails key={item.id} insurance={item as InsuranceType} />
-          );
+          return <InsuranceDetails key={item.id} insurance={item} />;
         })}
       </div>
     </div>
