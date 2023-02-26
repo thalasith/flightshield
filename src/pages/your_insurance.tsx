@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { WalletSelectorContextProvider } from "../contexts/WalletSelectorContext";
 import Header from "~/components/Header";
-import { InsuranceDetails } from "~/components/InsuranceDetails";
+import { InsuranceContainer } from "~/components/InsuranceContainer";
 
 const YourInsurance: NextPage = () => {
   return (
@@ -15,7 +15,7 @@ const YourInsurance: NextPage = () => {
       <main className="h-screen bg-gray-300">
         <WalletSelectorContextProvider>
           <Header />
-          <InsuranceDetails />
+          <InsuranceContainer />
         </WalletSelectorContextProvider>
       </main>
     </>

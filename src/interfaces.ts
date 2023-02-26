@@ -17,3 +17,16 @@ export interface FlightDetails {
   arrival_city: string;
   scheduled_time: number;
 }
+
+export interface InsuranceType {
+  id: number;
+  confirmation_number: string;
+  ticket_number: string;
+  flight_id: number;
+  first_name: string;
+  last_name: string;
+  first_insurance_paid: boolean;
+  second_insurance_paid: boolean;
+  premium_amount: number;
+  wallet: string;
+}
