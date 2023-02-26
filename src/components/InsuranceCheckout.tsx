@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useWalletSelector } from "../contexts/WalletSelectorContext";
-import { providers } from "near-api-js";
+import { Contract, providers } from "near-api-js";
 import type { CodeResult } from "near-api-js/lib/providers/provider";
 import { CONTRACT_ID } from "../constants";
 import { getFormattedDate, getFormattedTime } from "../utils/helpers";
@@ -81,11 +81,6 @@ export const InsuranceCheckout = () => {
   const setInsurance = useCallback(async () => {
     const wallet = await selector.wallet();
 
-    // confirmation_number: String,
-    //     ticket_number: String,
-    //     last_name: String,
-    //     first_name: String,
-    //     flight_id: i64,
     const test = {
       ticket_number: flightDetails.ticket_number,
       confirmation_number: flightDetails.confirmation_number,
@@ -98,6 +93,7 @@ export const InsuranceCheckout = () => {
       .signAndSendTransaction({
         signerId: accountId!,
         receiverId: CONTRACT_ID,
+        callbackUrl: "https://flightshield.vercel.app/test",
         actions: [
           {
             type: "FunctionCall",
@@ -105,7 +101,7 @@ export const InsuranceCheckout = () => {
               methodName: "create_insurance_details",
               args: test,
               gas: BOATLOAD_OF_GAS,
-              deposit: parseNearAmount("5000000000000000000000000")!,
+              deposit: parseNearAmount("5")!,
             },
           },
         ],
@@ -145,7 +141,7 @@ export const InsuranceCheckout = () => {
   };
 
   const purchaseInsurance = () => {
-    // setInsurance();
+    setInsurance();
     console.log("Purchasing insurance");
   };
 
