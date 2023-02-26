@@ -1,7 +1,7 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, AccountId};
+use near_sdk::{env, near_bindgen, AccountId, Promise, PromiseResult};
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -138,9 +138,8 @@ impl Contract {
         self.flight_vec.get(id as u64)
     }
 
-    pub fn get_confirmation_number(&self, id: i64) -> String {
-        let journey = self.journey_vec.get(id as u64).unwrap();
-        journey.confirmation_number
+    pub fn get_journey_details_by_confirmation_number(&self, confirmation_number: String) -> Option<JourneyDetails> {
+        self.journey_vec.iter().find(|journey| journey.confirmation_number == confirmation_number).clone()
     }
 
     pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
@@ -237,7 +236,7 @@ impl Contract {
         let flight = self.flight_vec.get(journey.flight_ids[0] as u64).unwrap();
         let insurance_helper = InsuranceHelper {
             ticket_number: journey.ticket_number.clone(),
-            confirmation_number: self.get_confirmation_number(journey.id),
+            confirmation_number: journey.confirmation_number.clone(),
             flight_id: flight.id.clone(),
             airline_code: flight.airline_code.clone(),
             flight_number: flight.flight_number.clone(),
@@ -292,4 +291,14 @@ impl Contract {
         assert!(insurance_details.len() > 0, "No insurance details found");
         insurance_details
     }
+
+    // pub fn payout_first_insurance(&mut self, id: i64){
+    //     let mut insurance_detail = self.insurance_vec.get(id as u64);
+    //     match insurance_detail {
+    //         Some(i) => {
+    //             let insurance_policy = insurance_detail.unwrap();
+
+    //         }
+    //     }
+    // }
 }
