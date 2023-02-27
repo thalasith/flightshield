@@ -1,7 +1,7 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::Vector;
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, AccountId, Promise, PromiseResult};
+use near_sdk::{env, json_types::U128, near_bindgen, AccountId, Promise};
 
 #[derive(BorshDeserialize, BorshSerialize, Debug, Serialize, Deserialize, Clone)]
 pub struct JourneyDetails {
@@ -167,9 +167,12 @@ impl Contract {
             .clone()
     }
 
+    // 1678125600000
+
     pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
         let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
         flight.estimated_departure_time = new_time;
+        flight.actual_departure_time = new_time;
         self.flight_vec.replace(flight_id as u64, &flight);
     }
 
@@ -246,6 +249,23 @@ impl Contract {
             }
         }
         None
+    }
+
+    pub fn change_passenger_status_by_ticket_last_name(
+        &mut self,
+        ticket_number: String,
+        last_name: String,
+    ) {
+        let journey = self.get_journey_details_by_ticket_last_name(ticket_number, last_name);
+
+        if journey.is_none() {
+            return;
+        }
+
+        let journey = journey.unwrap();
+        let mut journey = self.journey_vec.get(journey.id as u64).unwrap();
+        journey.passenger_status = PassengerStatus::CheckedIn;
+        self.journey_vec.replace(journey.id as u64, &journey);
     }
 
     pub fn get_helper_by_ticket_last_name(
@@ -364,13 +384,52 @@ impl Contract {
         insurance_details
     }
 
-    // pub fn payout_first_insurance(&mut self, id: i64){
-    //     let mut insurance_detail = self.insurance_vec.get(id as u64);
-    //     match insurance_detail {
-    //         Some(i) => {
-    //             let insurance_policy = insurance_detail.unwrap();
+    pub fn payout_first_insurance(&mut self, id: u64) {
+        let mut insurance = self.insurance_vec.get(id as u64).unwrap();
+        let account_id = insurance.wallet.clone();
+        let flight = self.flight_vec.get(insurance.flight_id as u64).unwrap();
+        // get the latest flight time
+        let flight_times = [
+            flight.scheduled_time.clone(),
+            flight.estimated_departure_time.clone(),
+            flight.actual_departure_time.clone(),
+        ];
+        let latest_flight_time = *flight_times.iter().max().unwrap();
 
-    //         }
-    //     }
-    // }
+        let journey = self
+            .get_journey_details_by_confirmation_number(insurance.confirmation_number.clone())
+            .unwrap();
+
+        let passenger_status = journey.passenger_status;
+
+        assert_ne!(
+            std::mem::discriminant(&passenger_status),
+            std::mem::discriminant(&PassengerStatus::NotCheckedIn),
+            "Passenger is not checked in."
+        );
+
+        assert!(
+            account_id == env::signer_account_id(),
+            "Only the wallet can payout"
+        );
+
+        assert!(
+            insurance.first_insurance_paid == false,
+            "First insurance already paid"
+        );
+
+        assert!(
+            latest_flight_time - flight.scheduled_time > 7200000 as u64,
+            "Flight is not delayed for more than 2 hours"
+        );
+
+        // change the insurance status of first insurance paid to true
+        insurance.first_insurance_paid = true;
+        // delete the old insurance
+        self.insurance_vec.replace(id, &insurance);
+
+        let insurance_payout = U128::from(5000000000000000000000000);
+
+        Promise::new(account_id).transfer(insurance_payout.0);
+    }
 }
