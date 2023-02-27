@@ -58,7 +58,7 @@ export const InsuranceContainer = () => {
   return (
     <div className="mx-auto my-auto flex h-full w-10/12 text-gray-600 ">
       <div className="flex w-full flex-col pl-8 pt-8">
-        <div className="pb-8 text-2xl font-bold">Your Insurance</div>
+        <div className="pb-8 text-4xl font-bold">Your Insurance</div>
         {insurance.length < 0 && <div>No insurance purchased! </div>}
 
         {insurance.map((item) => {

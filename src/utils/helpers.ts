@@ -44,3 +44,9 @@ export const getFormattedTime = (timestamp: number) => {
   } ${ampm || "AM"}`;
   return formattedTime;
 };
+
+export const getFormattedDateTime = (timestamp: number) => {
+  const date = getFormattedDate(timestamp);
+  const time = getFormattedTime(timestamp);
+  return `${date || ""} ${time || ""}`;
+};

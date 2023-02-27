@@ -402,9 +402,9 @@ impl Contract {
 
         let passenger_status = journey.passenger_status;
 
-        assert_ne!(
-            std::mem::discriminant(&passenger_status),
-            std::mem::discriminant(&PassengerStatus::NotCheckedIn),
+        assert!(
+            std::mem::discriminant(&passenger_status)
+                != std::mem::discriminant(&PassengerStatus::NotCheckedIn),
             "Passenger is not checked in."
         );
 
