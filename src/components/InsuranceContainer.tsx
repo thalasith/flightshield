@@ -7,6 +7,7 @@ import { getFormattedDate, getFormattedTime } from "../utils/helpers";
 import { utils } from "near-api-js";
 const BOATLOAD_OF_GAS = utils.format.parseNearAmount("0.00000000003")!;
 import { parseNearAmount } from "near-api-js/lib/utils/format";
+import { InsuranceDetails } from "./InsuranceDetails";
 import { InsuranceType } from "~/interfaces";
 
 export const InsuranceContainer = () => {
@@ -54,15 +55,9 @@ export const InsuranceContainer = () => {
       });
   }, [getInsurance]);
 
-  const InsuranceDetails = (props: { insurance: InsuranceType }) => {
-    const { insurance } = props;
-    console.log(insurance);
-    return <div>Hi there!</div>;
-  };
-
   return (
     <div className="mx-auto my-auto flex h-full w-10/12 text-gray-600 ">
-      <div className="flex flex-col pl-8 pt-8">
+      <div className="flex w-full flex-col pl-8 pt-8">
         <div className="pb-8 text-2xl font-bold">Your Insurance</div>
         {insurance.length < 0 && <div>No insurance purchased! </div>}
 

@@ -25,6 +25,11 @@ export interface InsuranceType {
   flight_id: number;
   first_name: string;
   last_name: string;
+  departure_city: string;
+  arrival_city: string;
+  scheduled_time: number;
+  current_scheduled_time: number;
+  passenger_status: string;
   first_insurance_paid: boolean;
   second_insurance_paid: boolean;
   premium_amount: number;
