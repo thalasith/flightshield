@@ -133,7 +133,10 @@ export const InsuranceCheckout = () => {
 
   const purchaseInsurance = () => {
     setInsurance(flightDetails)
-      .then((res) => {})
+      .then((res) => {
+        console.log("Insurance purchased");
+        console.log(res);
+      })
       .catch((err) => {
         console.log("Failed to purchase insurance");
         console.error(err);
