@@ -28,7 +28,7 @@ export const ClaimButton = (props: { insurance: InsuranceType }) => {
         .signAndSendTransaction({
           signerId: accountId!,
           receiverId: CONTRACT_ID,
-          callbackUrl: "https://flightshield.vercel.app/test",
+          callbackUrl: "https://flightshield.vercel.app/your_insurance",
           actions: [
             {
               type: "FunctionCall",
@@ -50,6 +50,42 @@ export const ClaimButton = (props: { insurance: InsuranceType }) => {
     [selector]
   );
 
+  const claimSecondInsurance = useCallback(
+    async (id: number) => {
+      const wallet = await selector.wallet();
+
+      const idInfo = {
+        id: id,
+      };
+
+      return wallet
+        .signAndSendTransaction({
+          signerId: accountId!,
+          receiverId: CONTRACT_ID,
+          callbackUrl: "https://flightshield.vercel.app/your_insurance",
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "payout_second_insurance",
+                args: idInfo,
+                gas: BOATLOAD_OF_GAS,
+                deposit: "0",
+              },
+            },
+          ],
+        })
+        .catch((err) => {
+          alert(err);
+          console.log(err);
+          throw err;
+        });
+    },
+    [selector]
+  );
+
+  console.log(insurance.id, insurance.passenger_status != "NotCheckedIn");
+
   if (insurance.second_insurance_paid === true) {
     return (
       <div className="w-full rounded bg-green-800 px-4 py-2 text-center text-white">
@@ -57,14 +93,17 @@ export const ClaimButton = (props: { insurance: InsuranceType }) => {
       </div>
     );
   } else if (
-    insurance.passenger_status != "CheckedIn" &&
+    insurance.passenger_status != "NotCheckedIn" &&
     insurance.first_insurance_paid === true &&
     isFlightDelayedSecond
   ) {
     return (
-      <div className="w-full rounded bg-green-800 px-4 py-2 text-center text-white">
+      <button
+        onClick={() => void claimSecondInsurance(insurance.id)}
+        className="w-full rounded bg-alert px-4 py-2 text-center text-white hover:bg-pink-600"
+      >
         Claim second payout!
-      </div>
+      </button>
     );
   } else if (insurance.first_insurance_paid === true) {
     return (
@@ -79,7 +118,7 @@ export const ClaimButton = (props: { insurance: InsuranceType }) => {
     return (
       <button
         onClick={() => void claimFirstInsurance(insurance.id)}
-        className="w-full rounded bg-alert px-4 py-2 text-center text-white hover:bg-pink-600 "
+        className="w-full rounded bg-alert px-4 py-2 text-center text-white hover:bg-pink-600"
       >
         Claim now!
       </button>

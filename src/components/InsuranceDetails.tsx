@@ -38,7 +38,8 @@ const passengerStatusFormatter = (status: string) => {
 export const InsuranceDetails = (props: { insurance: InsuranceType }) => {
   const { insurance } = props;
   const isFlightDelayed =
-    insurance.current_scheduled_time - insurance.scheduled_time > 0;
+    insurance.current_scheduled_time - insurance.scheduled_time >
+    60 * 60 * 1000 * 2;
 
   const time_flight = isFlightDelayed
     ? insurance.current_scheduled_time
