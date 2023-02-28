@@ -36,35 +36,39 @@ export const InsuranceCheckout = () => {
     }
   };
 
-  const getFlightDetails = useCallback(() => {
-    const { network } = selector.options;
+  const getFlightDetails = useCallback(
+    (ticketNumber: string, lastName: string) => {
+      const { network } = selector.options;
 
-    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
-    //base64 encoded id
-    const args = JSON.stringify({
-      ticket_number: "5554567891234",
-      last_name: "Sith",
-    });
-
-    const base64 = Buffer.from(args).toString("base64");
-
-    return provider
-      .query<CodeResult>({
-        request_type: "call_function",
-        account_id: CONTRACT_ID,
-        method_name: "get_helper_by_ticket_last_name",
-        args_base64: base64,
-        finality: "optimistic",
-      })
-      .then(
-        (res) => JSON.parse(Buffer.from(res.result).toString()) as FlightDetails
-      )
-      .catch((err) => {
-        console.log("Failed to get items");
-        console.error(err);
-        return [];
+      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      //base64 encoded id
+      const args = JSON.stringify({
+        ticket_number: ticketNumber,
+        last_name: lastName,
       });
-  }, [selector]);
+
+      const base64 = Buffer.from(args).toString("base64");
+
+      return provider
+        .query<CodeResult>({
+          request_type: "call_function",
+          account_id: CONTRACT_ID,
+          method_name: "get_helper_by_ticket_last_name",
+          args_base64: base64,
+          finality: "optimistic",
+        })
+        .then(
+          (res) =>
+            JSON.parse(Buffer.from(res.result).toString()) as FlightDetails
+        )
+        .catch((err) => {
+          console.log("Failed to get items");
+          console.error(err);
+          return [];
+        });
+    },
+    [selector]
+  );
 
   const setInsurance = useCallback(
     async (flightInfo: FlightDetails) => {
@@ -112,7 +116,7 @@ export const InsuranceCheckout = () => {
 
   const handleContinue = () => {
     if (step === 1) {
-      getFlightDetails()
+      getFlightDetails(ticketNumber, lastName)
         .then((res) => {
           if (Array.isArray(res)) {
             alert("No flight details found");

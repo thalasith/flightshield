@@ -12,7 +12,7 @@ const YourInsurance: NextPage = () => {
         <meta name="description" content="Protect against flight delay!" />
         <link rel="icon" href="/logo.png" />
       </Head>
-      <main className="h-screen bg-gray-300">
+      <main className="h-screen">
         <WalletSelectorContextProvider>
           <Header />
           <InsuranceContainer />

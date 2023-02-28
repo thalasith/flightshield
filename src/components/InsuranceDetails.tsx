@@ -10,7 +10,7 @@ const InsuranceColumn = (props: {
   return (
     <div className="flex flex-col pr-8">
       <div className="">{title}</div>
-      <div className={`text-2xl font-bold ${warning ? "text-red-600" : ""}`}>
+      <div className={`text-2xl font-bold ${warning ? "text-alert" : ""}`}>
         {value}
       </div>
     </div>
@@ -43,7 +43,7 @@ export const InsuranceDetails = (props: { insurance: InsuranceType }) => {
     ? insurance.current_scheduled_time
     : insurance.scheduled_time;
   return (
-    <div className="w-full rounded-xl border border-gray-300 bg-white pb-2 shadow-lg">
+    <div className="my-4 w-full rounded-xl border border-gray-300 bg-blue-100 pb-2 shadow-lg">
       <div className="flex flex-row items-center justify-between p-2 ">
         <div className="flex flex-row">
           <InsuranceColumn

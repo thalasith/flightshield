@@ -77,7 +77,7 @@ export default function Header() {
   }, [accountId, getAccount]);
 
   return (
-    <Popover className="sticky z-10 border-b border-gray-600 bg-primary">
+    <Popover className="fixed z-10 w-full border-b border-gray-600 bg-primary">
       <div className="mx-auto w-10/12 sm:px-6">
         <div className="flex items-center justify-between py-2 ">
           <div className="flex items-center justify-start lg:w-0 lg:flex-1">
