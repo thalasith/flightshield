@@ -167,8 +167,6 @@ impl Contract {
             .clone()
     }
 
-    // 1678125600000
-
     pub fn change_estimated_departure_time(&mut self, flight_id: i64, new_time: u64) {
         let mut flight = self.flight_vec.get(flight_id as u64).unwrap();
         flight.estimated_departure_time = new_time;
@@ -429,6 +427,60 @@ impl Contract {
         self.insurance_vec.replace(id, &insurance);
 
         let insurance_payout = U128::from(5000000000000000000000000);
+
+        Promise::new(account_id).transfer(insurance_payout.0);
+    }
+
+    pub fn payout_second_insurance(&mut self, id: u64) {
+        let mut insurance = self.insurance_vec.get(id as u64).unwrap();
+        let account_id = insurance.wallet.clone();
+        let flight = self.flight_vec.get(insurance.flight_id as u64).unwrap();
+        // get the latest flight time
+        let flight_times = [
+            flight.scheduled_time.clone(),
+            flight.estimated_departure_time.clone(),
+            flight.actual_departure_time.clone(),
+        ];
+        let latest_flight_time = *flight_times.iter().max().unwrap();
+
+        let journey = self
+            .get_journey_details_by_confirmation_number(insurance.confirmation_number.clone())
+            .unwrap();
+
+        let passenger_status = journey.passenger_status;
+
+        assert!(
+            std::mem::discriminant(&passenger_status)
+                != std::mem::discriminant(&PassengerStatus::NotCheckedIn),
+            "Passenger is not checked in."
+        );
+
+        assert!(
+            account_id == env::signer_account_id(),
+            "Only the wallet can payout"
+        );
+
+        assert!(
+            insurance.first_insurance_paid == true,
+            "First insurance hasn't been paid out"
+        );
+
+        assert!(
+            insurance.second_insurance_paid == false,
+            "Second insurance already paid"
+        );
+
+        assert!(
+            latest_flight_time - flight.scheduled_time > 28800000 as u64,
+            "Flight is not delayed for more than 8 hours"
+        );
+
+        // change the insurance status of first insurance paid to true
+        insurance.first_insurance_paid = true;
+        // delete the old insurance
+        self.insurance_vec.replace(id, &insurance);
+
+        let insurance_payout = U128::from(20000000000000000000000000);
 
         Promise::new(account_id).transfer(insurance_payout.0);
     }
