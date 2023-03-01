@@ -15,7 +15,9 @@ const InsuranceDetails: NextPage = () => {
       <main className="h-screen">
         <WalletSelectorContextProvider>
           <Header />
-          <InsuranceCheckout />
+          <div className="pt-24">
+            <InsuranceCheckout />
+          </div>
         </WalletSelectorContextProvider>
       </main>
     </>

@@ -304,7 +304,7 @@ export const InsuranceCheckout = () => {
   };
 
   return (
-    <div className="mx-auto my-auto flex h-full w-10/12 text-gray-600">
+    <div className="mx-auto my-auto flex h-full w-10/12 align-middle text-gray-600">
       {step === 1 && (
         <div className="mx-8 mt-4 h-1/2 w-full flex-col">
           <div className=" flex flex-row items-center justify-between border-b border-gray-400 pb-2">
