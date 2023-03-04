@@ -321,7 +321,7 @@ export const InsuranceCheckout = () => {
             </div>
             <div className="flex w-1/2 flex-col text-lg">
               <div>
-                <p>Confirmation Number or eTicket Number</p>
+                <p>eTicket Number</p>
                 <input
                   type="text"
                   name="ticketNumber"
