@@ -96,7 +96,7 @@ export const InsuranceCheckout = () => {
                 methodName: "create_insurance_details",
                 args: insuranceInfo,
                 gas: BOATLOAD_OF_GAS,
-                deposit: parseNearAmount("1")!,
+                deposit: parseNearAmount("5.50")!,
               },
             },
           ],

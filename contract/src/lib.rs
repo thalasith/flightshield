@@ -77,6 +77,8 @@ pub struct InsuranceViewDetails {
     pub flight_id: i64,
     pub departure_city: String,
     pub arrival_city: String,
+    pub airline_code: String,
+    pub flight_number: u64,
     pub scheduled_time: u64,
     pub current_scheduled_time: u64,
     pub passenger_status: PassengerStatus,
@@ -372,6 +374,8 @@ impl Contract {
                     premium_amount: insurance.premium_amount,
                     departure_city: flight.departure_city.clone(),
                     arrival_city: flight.arrival_city.clone(),
+                    airline_code: flight.airline_code.clone(),
+                    flight_number: flight.flight_number.clone(),
                     scheduled_time: flight.scheduled_time.clone(),
                     wallet: insurance.wallet.clone(),
                 };
@@ -426,7 +430,7 @@ impl Contract {
         // delete the old insurance
         self.insurance_vec.replace(id, &insurance);
 
-        let insurance_payout = U128::from(5000000000000000000000000);
+        let insurance_payout = U128::from(20000000000000000000000000);
 
         Promise::new(account_id).transfer(insurance_payout.0);
     }
@@ -480,7 +484,7 @@ impl Contract {
         // delete the old insurance
         self.insurance_vec.replace(id, &insurance);
 
-        let insurance_payout = U128::from(20000000000000000000000000);
+        let insurance_payout = U128::from(100000000000000000000000000);
 
         Promise::new(account_id).transfer(insurance_payout.0);
     }

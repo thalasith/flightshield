@@ -1,28 +1,34 @@
-# Create T3 App
+#Welcome to Flight Shield
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Authors: Boris Tsao, Harrison Chen
 
-## What's next? How do I make an app with this?
+Objective:
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Flight Shield is our ETHDenver23 buidl submission. The project is our vision for a prospective
+flight insurance product targeted towards frequent flyers. Our objective is to showcase several policy claim flows, as well as a purchase flow.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Tech Stack:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Front-End == T3 (React, Typescript, Tailwind)
+- Back-End Protocol / Smart Contract == Near Protocol (Rust)
+- Infrastructure / Deployment == Vercel
+- Data == Speculative flight/customer journey/insurance policy data
 
-## Learn More
+Usage:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Visit flightshield.vercel.app
+- Initiate app through 'Connect Your Wallet' Button
+- Connect Your Near Wallet
+- Click 'Purchase Insurance' button once connected
+- Enter your pre-purchased flight ticket number and last name associated with your ticket
+- Review your flight details
+- Review Insurance Terms
+- Purchase Insurance
+- Approve Purchase through Near Wallet
+- View Purchased Insurance policies and claim status
+- For flights delayed over 2 hours: Checked in customers can receive 20 NEAR
+- For flights delayed over 8 hours: Checked in customers can receive 100 NEAR
+- Eligible customers can submit policy claims by clicking on claim submission buttons next to policy
+  - Otherwise, all other customer types will see 'Nothing to Claim'
+- Flights delayed over 2-8 hours can make exactly one claim for 20 NEAR
+- Flights delayed over 8 hours can make exactly two claims by clicking on their claim submission button twice
