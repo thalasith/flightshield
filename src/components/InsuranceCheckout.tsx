@@ -88,7 +88,7 @@ export const InsuranceCheckout = () => {
         .signAndSendTransaction({
           signerId: accountId!,
           receiverId: CONTRACT_ID,
-          callbackUrl: "https://flightshield.vercel.app/your_insurance",
+          callbackUrl: "https://flightshield.vercel.app/congrats",
           actions: [
             {
               type: "FunctionCall",
