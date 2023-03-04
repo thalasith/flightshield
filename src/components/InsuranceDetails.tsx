@@ -5,14 +5,18 @@ import { getFormattedDateTime } from "../utils/helpers";
 const InsuranceColumn = (props: {
   title: string;
   value: string;
+  value2: string;
   warning: boolean;
 }) => {
-  const { title, value, warning } = props;
+  const { title, value, value2, warning } = props;
   return (
     <div className="flex w-1/3 flex-col pl-4">
       <div className="">{title}</div>
-      <div className={`text-2xl font-bold ${warning ? "text-alert" : ""}`}>
+      <div className={`text-2xl font-bold `}>
         {value}
+        <span className={`pl-2 text-sm ${warning ? "text-alert" : ""}`}>
+          {value2 === "" ? "" : `(${value2})`}
+        </span>
       </div>
     </div>
   );
@@ -51,16 +55,27 @@ export const InsuranceDetails = (props: { insurance: InsuranceType }) => {
           <InsuranceColumn
             title="Journey"
             value={`${insurance.departure_city} to ${insurance.arrival_city}`}
+            value2=""
             warning={false}
           />
           <InsuranceColumn
             title="Current Departure Date"
             value={getFormattedDateTime(time_flight)}
+            value2={
+              isFlightDelayed
+                ? `${Math.round(
+                    (insurance.current_scheduled_time -
+                      insurance.scheduled_time) /
+                      (60 * 60 * 1000)
+                  )} hr delay`
+                : ""
+            }
             warning={isFlightDelayed}
           />
           <InsuranceColumn
             title="Passenger Status"
             value={passengerStatusFormatter(insurance.passenger_status)}
+            value2=""
             warning={false}
           />
         </div>

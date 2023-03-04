@@ -15,9 +15,8 @@ import { GiBasketballBall } from "react-icons/gi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 
 export default function Header() {
-  const { selector, modal, accounts, accountId } = useWalletSelector();
+  const { selector, modal, accountId } = useWalletSelector();
   const [account, setAccount] = useState<Account | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const getAccount = useCallback(async (): Promise<Account | null> => {
     if (!accountId) {
@@ -61,18 +60,14 @@ export default function Header() {
       return setAccount(null);
     }
 
-    setLoading(true);
-
     // return void in this promise to avoid React warning
     getAccount()
       .then((nextAccount) => {
         setAccount(nextAccount);
-        setLoading(false);
       })
       .catch((err) => {
         console.log("Failed to get account");
         console.error(err);
-        setLoading(false);
       });
   }, [accountId, getAccount]);
 

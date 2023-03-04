@@ -27,6 +27,8 @@ export const InsuranceCheckout = () => {
     scheduled_time: 0,
   });
 
+  console.log("flightDetails", flightDetails);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "ticketNumber") {
@@ -86,7 +88,7 @@ export const InsuranceCheckout = () => {
         .signAndSendTransaction({
           signerId: accountId!,
           receiverId: CONTRACT_ID,
-          callbackUrl: "https://flightshield.vercel.app/test",
+          callbackUrl: "https://flightshield.vercel.app/your_insurance",
           actions: [
             {
               type: "FunctionCall",
@@ -251,11 +253,11 @@ export const InsuranceCheckout = () => {
             </p>
             <p className="mt-2">
               If your flight is delayed 2 to 8 hours, you wil receive{" "}
-              <span className="font-bold text-primary">USD 40</span>.
+              <span className="font-bold text-primary">20 NEAR</span>.
             </p>
             <p className="mt-2">
               If your flight is delayed 8+ hours, you wil receive{" "}
-              <span className="font-bold text-primary">USD 500</span>.
+              <span className="font-bold text-primary">100 NEAR</span>.
             </p>
           </div>
         </div>
@@ -269,7 +271,7 @@ export const InsuranceCheckout = () => {
                 <p>Premium:</p>
               </div>
               <div>
-                <p>USD 20.00</p>
+                <p>5.00 N</p>
               </div>
             </div>
             <div className="flex flex-row justify-between border-b border-gray-400">
@@ -277,7 +279,7 @@ export const InsuranceCheckout = () => {
                 <p>Taxes:</p>
               </div>
               <div>
-                <p>USD 2.50</p>
+                <p>0.50 N</p>
               </div>
             </div>
             <div className="flex flex-row justify-between py-2 font-bold">
@@ -285,7 +287,7 @@ export const InsuranceCheckout = () => {
                 <p>Total:</p>
               </div>
               <div>
-                <p>USD 22.50</p>
+                <p>5.50 N</p>
               </div>
             </div>
           </div>
